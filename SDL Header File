@@ -1,0 +1,41 @@
+#ifndef SDL_Plotter_h
+#define SDL_Plotter_h
+
+using namespace std;
+
+class SDL_Plotter{
+public:
+    SDL_Plotter (int r=480, int c=640, bool WITH_SOUND = true);
+    
+    void update();
+    
+    bool kbhit();
+    
+    char getKey();
+    
+    void plotPixel(int x, int y, int r, int g, int b);
+    
+    int getRow();
+    
+    int getCol();
+    
+    void initSound(string sound);
+    
+    void quitSound(string sound);
+    
+    void playSound(string sound);
+    
+    void Sleep(int ms);
+    
+    bool getMouseClick(int& x, int& y);
+    
+    bool getMouseDown(int& x, int& y);
+    
+    bool getMouseUp(int& x, int& y);
+    
+    bool getMouseMotion(int& x, int& y);
+    
+    void getMouseLocation(int& x, int& y);
+};
+
+#endif /* SDL_Plotter_h */
