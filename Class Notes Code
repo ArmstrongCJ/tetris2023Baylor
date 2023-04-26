@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cmath>
+#include "SDL_Plotter.h"
+
+using namespace std;
+
+void drawSquare(SDL_Plotter& g, int xOff=0, int yOff=0,
+                int size=25, int R=0, int G=0, int B=0);
+
+int main(int argc, char ** argv)
+{
+
+    SDL_Plotter g(1000,1000);
+    point p;
+    color c;
+    int  size = 50;
+    int xOff = 100, yOff = 125;
+    int R = 70, G = 255, B = 75;
+    int speed = 10;
+    int rate = 1;
+    char key;
+    while (!g.getQuit())
+    {
+        drawSquare(g, xOff, yOff, 50, 255, 255, 255);
+		if(g.kbhit()){
+            key = g.getKey();
+            switch(key){
+                case RIGHT_ARROW: xOff += size;
+                                  break;
+                case LEFT_ARROW: xOff -= size;
+                                  break;
+            }
+
+		}
+
+
+		//R = rand()%256;
+		//G = rand()%256;
+		//B = rand()%256;
+		yOff += rate;
+
+        drawSquare(g, xOff, yOff, size, R, G, B);
+
+		g.update();
+		g.Sleep(speed);
+		if(yOff == 0 || (yOff > g.getRow() - size)){
+            rate *= -1;
+		}
+    }
+}
+
+
+void drawSquare(SDL_Plotter& g, int xOff, int yOff,
+                int size, int R, int G, int B){
+    for(int x = 0; x < size; x++){
+        for(int y = 0; y < size; y++){
+            g.plotPixel(x + xOff, y + yOff, R, G, B);
+        }
+    }
+}
