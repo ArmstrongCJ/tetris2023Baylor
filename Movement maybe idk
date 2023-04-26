@@ -1,0 +1,34 @@
+#include <iostream>
+#include <cmath>
+#include "SDL_Plotter.h"
+
+using namespace std;
+
+void moveBlock(SDL_Plotter& g, int xOff, int yOff);
+
+int main(int argc, const char * argv[]) {
+
+    SDL_Plotter g(1000,1000);
+    int xOff = 0, yOff = 0, move = 50;
+    char key, exit = 'q';
+    
+    while (g.getKey() != exit){
+        moveBlock(g, xOff, yOff);
+        if (g.kbhit()){
+            key = g.getKey();
+            switch(key){
+                case RIGHT_ARROW: xOff += 50;
+                    break;
+                case LEFT_ARROW: xOff -= 50;
+                    break;
+                case UP_ARROW: yOff += 50;
+                    break;
+                case DOWN_ARROW: yOff -= 50;
+                    break;
+            }
+        }
+        moveBlock(g, xOff, yOff);
+        g.update();
+    }
+    return 0;
+}
