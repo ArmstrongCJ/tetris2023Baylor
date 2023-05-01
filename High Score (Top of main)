@@ -159,6 +159,7 @@ public:
             }
             highScore = "HIGHSCORE " + to_string(this->highScore);
             g.clear();
+            // Here you can put a "Game Over" msg as well as the score text and stuff (Idk how to do the text/display stuff)
             gameOverDisplayed = true;
         }
     }
