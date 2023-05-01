@@ -108,38 +108,53 @@ public:
             return false;
         }
 
-        void merge(const Tetrimino& tetrimino) {
-            for (size_t i = 0; i < tetrimino.blocks.size(); i++) {
-                for (size_t j = 0; j < tetrimino.blocks[i].size(); j++) {
-                    if (tetrimino.blocks[i][j]) {
-                        int x = tetrimino.x + j;
-                        int y = tetrimino.y + i;
-                        grid[y][x] = tetrimino.shape;
-                    }
-                }
-            }
-
-            // Check for cleared lines
-            for (int i = ROWS - 1; i >= 0;) {
-                bool isLineFull = true;
-                for (int j = 0; j < COLS; j++) {
-                    if (grid[i][j] == -1) {
-                        isLineFull = false;
-                        break;
-                    }
-                }
-
-                if (isLineFull) {
-                    grid.erase(grid.begin() + i);
-                    grid.insert(grid.begin(), vector<int>(COLS, -1));
-                } else {
-                    i--;
+    void merge(const Tetrimino& tetrimino) {
+        for (size_t i = 0; i < tetrimino.blocks.size(); i++) {
+            for (size_t j = 0; j < tetrimino.blocks[i].size(); j++) {
+                if (tetrimino.blocks[i][j]) {
+                    int x = tetrimino.x + j;
+                    int y = tetrimino.y + i;
+                    grid[y][x] = tetrimino.shape;
                 }
             }
         }
-    };
+
+            // Check for cleared lines
+        for (int i = ROWS - 1; i >= 0;) {
+            bool isLineFull = true;
+            for (int j = 0; j < COLS; j++) {
+                if (grid[i][j] == -1) {
+                    isLineFull = false;
+                    break;
+                }
+            }
+
+            if (isLineFull) {
+                grid.erase(grid.begin() + i);
+                grid.insert(grid.begin(), vector<int>(COLS, -1));
+            } else {
+                i--;
+            }
+        }
+    }
+};
 
     int main(int argc, char** argv) {
+
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048); // initialize audio player
+        Mix_Music *backgroudMUS = Mix_LoadMUS("sound/Tetris.wav");  // load sound;
+        Mix_Chunk *sound1 = Mix_LoadWAV("sound/8bit_beep.wav");     // load sound;
+        Mix_Chunk *sound2 = Mix_LoadWAV("sound/8bit_boom.wav");     // load sound;
+        Mix_Chunk *sound3 = Mix_LoadWAV("sound/8bit_crush.wav");    // load sound;
+        Mix_Chunk *sound4 = Mix_LoadWAV("sound/8bit_pick.wav");     // load sound;
+
+        Mix_PlayMusic(backgroudMUS, -1); // play background music for infinite times
+        Mix_VolumeMusic(MIX_MAX_VOLUME / 3);// set background music volume
+
+        Mix_Volume(0, 128); //set channel volume
+        Mix_Volume(1, 48); //set channel volume
+        Mix_Volume(2, 68); //set channel volume
+
         srand(time(NULL));
         SDL_Plotter g(BOARD_WIDTH, BOARD_HEIGHT);
         TetrisBoard board;
@@ -182,16 +197,18 @@ public:
 
         while (!g.getQuit()) {
             if (!isPaused) {
+                Mix_ResumeMusic(); // resume background music
                 fallDelay++;
 
                 if (fallDelay >= speed) {
                     currentTetrimino->move(0, 1);
                     if (board.isCollision(*currentTetrimino)) {
-                        currentTetrimino
-                        ->move(0, -1);
+                        currentTetrimino->move(0, -1);
                         board.merge(*currentTetrimino);
                         delete currentTetrimino;
                         currentTetrimino = new Tetrimino(rand() % TETRIMINOS.size());
+
+                        Mix_PlayChannel(2, sound3, 0);  //playsound3
                     }
                     fallDelay = 0;
                 }
@@ -202,18 +219,21 @@ public:
                 switch (key) {
                     case RIGHT_ARROW:
                         currentTetrimino->move(1, 0);
+                        Mix_PlayChannel(0, sound1, 0);
                         if (board.isCollision(*currentTetrimino)) {
                             currentTetrimino->move(-1, 0);
                         }
                         break;
                     case LEFT_ARROW:
                         currentTetrimino->move(-1, 0);
+                        Mix_PlayChannel(0, sound1, 0);  //play sound1
                         if (board.isCollision(*currentTetrimino)) {
                             currentTetrimino->move(1, 0);
                         }
                         break;
                     case UP_ARROW:
                         currentTetrimino->rotate();
+                        Mix_PlayChannel(1, sound2, 0); //play sound2
                         if (board.isCollision(*currentTetrimino)) {
                             for (int i = 0; i < 3; i++) {
                                 currentTetrimino->rotate(); // Rotate 3 times to go back to the previous state
@@ -221,6 +241,8 @@ public:
                         }
                         break;
                     case 'P':
+                        Mix_PlayChannel(0, sound4, 0); //play sound4
+                        Mix_PauseMusic(); //pause background music
                         isPaused = !isPaused;
                         break;
                 }
@@ -233,6 +255,7 @@ public:
             g.Sleep(1);
         }
 
+        Mix_CloseAudio();//CLOSE AUDIO PLAYER
         delete currentTetrimino;
         return 0;
     }
