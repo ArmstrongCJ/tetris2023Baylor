@@ -1,0 +1,104 @@
+#include "Game.h"
+
+Tetrimino::Tetrimino(int shape) : x(COLS / 2 - 2), y(0), shape(shape), blocks(TETRIMINOS[shape]) {}
+
+void Tetrimino::rotate() {
+    vector<vector<bool>> rotated(blocks[0].size(), vector<bool>(blocks.size()));
+        for (size_t i = 0; i < blocks.size(); i++) {
+            for (size_t j = 0; j < blocks[i].size(); j++) {
+                rotated[j][blocks.size() - i - 1] = blocks[i][j];
+            }
+        }
+    blocks = rotated;
+}
+
+void Tetrimino::move(int dx, int dy) {
+    x += dx;
+    y += dy;
+}
+
+TetrisBoard::TetrisBoard() : grid(ROWS, vector<int>(COLS, -1)) {}
+
+bool TetrisBoard::isCollision(const Tetrimino& tetrimino) {
+    for (size_t i = 0; i < tetrimino.blocks.size(); i++) {
+        for (size_t j = 0; j < tetrimino.blocks[i].size(); j++) {
+            if (tetrimino.blocks[i][j]) {
+                int x = tetrimino.x + j;
+                int y = tetrimino.y + i;
+                if (x < 0 || x >= COLS || y < 0 || y
+                    >= ROWS || grid[y][x] != -1) {
+                    return true;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    return false;
+    
+}
+
+void TetrisBoard::merge(const Tetrimino& tetrimino) {
+    for (size_t i = 0; i < tetrimino.blocks.size(); i++) {
+        for (size_t j = 0; j < tetrimino.blocks[i].size(); j++) {
+            if (tetrimino.blocks[i][j]) {
+                int x = tetrimino.x + j;
+                int y = tetrimino.y + i;
+                grid[y][x] = tetrimino.shape;
+                
+            }
+            
+        }
+        
+    }
+    // Check for cleared lines
+    for (int i = ROWS - 1; i >= 0;) {
+        bool isLineFull = true;
+        for (int j = 0; j < COLS; j++) {
+            if (grid[i][j] == -1) {
+                isLineFull = false;
+                break;
+                
+            }
+            
+        }
+        if (isLineFull) {
+            grid.erase(grid.begin() + i);
+            grid.insert(grid.begin(), vector<int>(COLS, -1));
+            count++;
+        } else {
+            i--;
+            
+        }
+        
+    }
+    
+}
+
+
+void TetrisBoard::gameOver(SDL_Plotter& g){
+    ifstream fileIn;
+    ofstream fileOut;
+    string displayScore;
+    string highScore;
+    int score;
+
+    if(!gameOverDisplayed){
+        score = (count * 100);
+        displayScore = "YOUR SCORE " + to_string(score);
+        fileIn.open("highScore.txt");
+        if(fileIn.is_open()){
+            fileIn >> this->highScore;
+        }
+        if(score > this->highScore){
+            this->highScore = score;
+            fileOut.open("highScore.txt");
+            fileOut << this->highScore;
+        }
+        highScore = "HIGHSCORE " + to_string(this->highScore);
+        g.clear();
+        gameOverDisplayed = true;
+    }
+}
