@@ -139,22 +139,9 @@ public:
     }
 };
 
-void showStarterScreen(SDL_Plotter& g) {
-    int centerX = BOARD_WIDTH / 2;
-    int centerY = BOARD_HEIGHT / 2;
-
-   
-    g.update();
-
-    while (!g.getQuit() && !g.kbhit()) {
-        g.Sleep(10);
-    }
-}
 
     int main(int argc, char** argv) {
         
-        SDL_Plotter a(BOARD_WIDTH, BOARD_HEIGHT);
-        showStarterScreen(a);
 
         Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048); // initialize audio player
         Mix_Music *backgroudMUS = Mix_LoadMUS("sound/Tetris.wav");  // load sound;
