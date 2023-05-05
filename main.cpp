@@ -253,9 +253,18 @@ public:
                         Mix_PauseMusic(); //pause background music
                         isPaused = !isPaused;
                         break;
-                        
+                    case ' ':
+                        while (!board.isCollision(*currentTetrimino)) {
+                            currentTetrimino->move(0, 1);
+                        }
+                        currentTetrimino->move(0, -1);
+                        board.merge(*currentTetrimino);
+                        delete currentTetrimino;
+                        currentTetrimino = new Tetrimino(rand() % TETRIMINOS.size());
+                        break;
                 }
             }
+                        
 
             g.clear();
             drawBoard();
