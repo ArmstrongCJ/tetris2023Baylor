@@ -137,7 +137,18 @@ public:
             }
         }
     }
+    
+    bool isGameOver() {
+        for (int j = 0; j < COLS; j++) {
+            if (grid[0][j] != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
 };
+
+
 
 
     int main(int argc, char** argv) {
@@ -221,6 +232,7 @@ public:
                     fallDelay = 0;
                 }
             }
+            
 
             if (g.kbhit()) {
                 key = g.getKey();
@@ -263,7 +275,14 @@ public:
                         currentTetrimino = new Tetrimino(rand() % TETRIMINOS.size());
                         break;
                 }
+                
             }
+            if (board.isGameOver()) {
+                g.update();
+                g.Sleep(3000); // Wait for 3 seconds before ending the game
+                break;
+            }
+
                         
 
             g.clear();
