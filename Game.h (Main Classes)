@@ -1,0 +1,91 @@
+#ifndef Game_h
+#define Game_h
+
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <ctime>
+#include <algorithm>
+#include "SDL_Plotter.h"
+
+using namespace std;
+
+const int ROWS = 20;
+const int COLS = 10;
+const int BLOCK_SIZE = 25;
+const int BOARD_WIDTH = 1000;
+const int BOARD_HEIGHT = 1000;
+const vector<int> BACKGROUND_COLOR = {25, 25, 25};
+
+// Tetrimino shapes
+const vector<vector<vector<bool>>> TETRIMINOS = {
+    // I
+    {
+        {1, 1, 1, 1}
+    },
+    // O
+    {
+        {1, 1},
+        {1, 1}
+    },
+    // T
+    {
+        {0, 1, 0},
+        {1, 1, 1}
+    },
+    // L
+    {
+        {1, 0, 0},
+        {1, 1, 1}
+    },
+    // J
+    {
+        {0, 0, 1},
+        {1, 1, 1}
+    },
+    // S
+    {
+        {0, 1, 1},
+        {1, 1, 0}
+    },
+    // Z
+    {
+        {1, 1, 0},
+        {0, 1, 1}
+    }
+};
+
+// Color values for Tetris
+const vector<vector<int>> COLORS = {
+    {0, 255, 255},
+    {255, 255, 0},
+    {128, 0, 128},
+    {255, 165, 0},
+    {0, 0, 255},
+    {0, 255, 0},
+    {255, 0, 0}
+};
+
+class Tetrimino {
+public:
+    int x, y, shape;
+    vector<vector<bool>> blocks;
+    Tetrimino(int shape);
+    void rotate();
+    void move(int dx, int dy);
+};
+
+class TetrisBoard {
+private:
+    int highScore;
+    bool gameOverDisplayed;
+    int count = 0;
+public:
+    vector<vector<int>> grid;
+    TetrisBoard();
+    bool isCollision(const Tetrimino& tetrimino);
+    void merge(const Tetrimino& tetrimino);
+    void gameOver(SDL_Plotter&);
+};
+
+#endif /* Game_h */
